@@ -1,0 +1,39 @@
+{
+  "_comment": "General rule pack: costed/outbound/destructive patterns that apply to ANY project. Extend or trim freely. toolMatchers match against MCP/tool NAMES by substring; bashMatchers are case-insensitive regex tested against shell command strings; sqlMutation names the category for any INSERT/UPDATE/DELETE/DROP/etc.",
+
+  "toolMatchers": {
+    "send-email": "outbound_comms",
+    "send-batch-emails": "outbound_comms",
+    "send-broadcast": "outbound_comms",
+    "send_message": "outbound_comms",
+    "send_audio_message": "outbound_comms",
+    "send_file": "outbound_comms",
+    "create-comment": "outbound_comms",
+
+    "deploy_edge_function": "deploy",
+    "deploy_to_vercel": "deploy",
+    "apply_migration": "db_write",
+    "create_branch": "deploy",
+    "merge_branch": "deploy",
+    "rebase_branch": "deploy",
+    "reset_branch": "destructive",
+    "delete_branch": "destructive",
+    "pause_project": "destructive",
+    "restore_project": "deploy",
+    "confirm_cost": "spend"
+  },
+
+  "sqlMutation": "db_write",
+
+  "bashMatchers": [
+    { "category": "deploy",      "pattern": "\\b(railway\\s+(up|redeploy)|vercel\\s+(deploy|--prod|-prod)|fly\\s+deploy|netlify\\s+deploy|supabase\\s+(functions\\s+deploy|db\\s+push)|npm\\s+publish|yarn\\s+publish|docker\\s+push|gh\\s+pr\\s+merge|gh\\s+release\\s+create)\\b" },
+    { "category": "deploy",      "pattern": "\\bgit\\s+push\\b[\\s\\S]*\\b(main|master|production|prod|release)\\b" },
+    { "category": "destructive", "pattern": "\\brm\\s+-[a-z]*r[a-z]*f?\\b|\\brm\\s+-[a-z]*f[a-z]*r?\\b" },
+    { "category": "destructive", "pattern": "\\brmdir\\b|\\bRemove-Item\\b[\\s\\S]*-Recurse|\\bgit\\s+push\\b[\\s\\S]*(--force|-f)\\b|\\bgit\\s+reset\\s+--hard\\b|\\bgit\\s+clean\\s+-[a-z]*f|\\bdrop\\s+(table|database|schema)\\b|\\btruncate\\s+table\\b|\\bmkfs\\b|\\bformat\\s+[A-Za-z]:" },
+    { "category": "publish",     "pattern": "\\b(tweet|post-to|publish)\\b|\\bcurl\\b[\\s\\S]*(api\\.twitter|graph\\.facebook|api\\.linkedin|slack\\.com/api/chat\\.postMessage)" }
+  ],
+
+  "allowlist": [
+    "\\bgit\\s+push\\b[\\s\\S]*\\bHEAD:refs/heads/(?!main|master|production|prod)"
+  ]
+}

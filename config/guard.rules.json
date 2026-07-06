@@ -1,0 +1,17 @@
+{
+  "_comment": "Safety policy for the agent OS approval gate. Categories map to a policy: gate (needs your approval), allow (runs free), deny (hard-blocked, no approval path). Any category not listed, and any action that matches no rule, defaults to allow. Rule PATTERNS live in the rulepacks (see enabledPacks); this file only sets policy. Edit freely.",
+  "version": 1,
+
+  "enabledPacks": ["general", "socialgravity"],
+
+  "categories": {
+    "outbound_comms": { "policy": "gate", "desc": "messages, emails, or posts sent to other people" },
+    "deploy":         { "policy": "gate", "desc": "shipping code or config to production" },
+    "db_write":       { "policy": "gate", "desc": "mutations against a real database" },
+    "spend":          { "policy": "gate", "desc": "actions that cost money" },
+    "destructive":    { "policy": "gate", "desc": "irreversible local or remote destruction" },
+    "publish":        { "policy": "gate", "desc": "posting content publicly" }
+  },
+
+  "defaultPolicy": "allow"
+}

@@ -1,0 +1,13 @@
+{
+  "_comment": "SocialGravity-specific costed/outbound patterns. This is an EXAMPLE domain pack: to adapt the agent OS to another project, copy this shape into a new pack and add it to enabledPacks. Remove this pack entirely if you do not work on SocialGravity.",
+
+  "toolMatchers": {},
+
+  "bashMatchers": [
+    { "category": "spend",          "pattern": "\\b(mint|revoice|agent-kick|twin-corpus-index|creator-page-factory|creator-mint-verify)\\b" },
+    { "category": "deploy",         "pattern": "\\bnpm\\s+run\\s+ship" },
+    { "category": "outbound_comms", "pattern": "\\bdm-sweep|\\bsend-broadcast|\\bgrowth-daily\\b[\\s\\S]*send" }
+  ],
+
+  "allowlist": []
+}

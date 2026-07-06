@@ -1,0 +1,10 @@
+# runtime approval state (per-machine, never versioned)
+state/
+# settings backups the installer makes
+*.bak.*
+# node
+node_modules/
+npm-debug.log*
+# os
+.DS_Store
+Thumbs.db

@@ -1,0 +1,22 @@
+{
+  "_comment": "Model routing policy for the agent OS. The 'brain' does judgment; the 'hands' do cheap high-volume execution. This file documents the intended routing; the actual wiring is done via Claude Code Router (see docs/setup-routing.md). SWE-bench Verified (Jul 2026): Mythos 5 95.5, Fable 5 95.0, Opus 4.8 88.6 (owned via Max), GPT-5.5 82.6, GLM/DeepSeek ~77-80. There is no Fable-level model outside Anthropic; the brain is already the best affordable option.",
+
+  "brain": {
+    "provider": "anthropic",
+    "models": ["claude-opus-4-8", "claude-fable-5"],
+    "use_for": ["planning", "architecture", "adversarial review", "pricing/strategy", "high-blast-radius decisions", "code edits to shared/critical files", "hard reasoning"]
+  },
+
+  "hands": {
+    "provider": "deepseek | zai(glm)",
+    "models": ["deepseek-chat", "glm-4.6", "glm-5.2"],
+    "use_for": ["broad reads/sweeps", "draft text", "log parsing", "research fan-out", "mechanical low-risk edits"],
+    "note": "Cheap models fumble code edits (wrong line numbers, malformed hunks). They READ and DRAFT; the brain EDITS."
+  },
+
+  "privacy_line": {
+    "rule": "Personal/identity data, private files, secrets, and any user PII NEVER go to a HOSTED cheap third-party API (z.ai/DeepSeek are China-hosted).",
+    "escape_hatch": "GLM weights are open: self-host on your own box for anything near sensitive data, so nothing leaves your infra. The hosted cheap APIs see only non-sensitive code and public text.",
+    "enforcement": "Route PII-touching tasks to the brain (Anthropic) or a self-hosted model; keep the cheap hosted providers on background/no-PII work only."
+  }
+}

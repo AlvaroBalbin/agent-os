@@ -1,0 +1,19 @@
+{
+  "name": "agent-os",
+  "version": "0.1.0",
+  "description": "A personal agent operating system: drive safe, model-tiered AI agents from your phone. Brain/hands model split, config-driven approval gate on anything costed or destructive.",
+  "type": "module",
+  "bin": {
+    "agentos-approve": "bin/approve.mjs",
+    "agentos-audit": "bin/audit.mjs"
+  },
+  "scripts": {
+    "test": "node test/guard.test.mjs",
+    "install-hook": "node install.mjs",
+    "install-hook:dry": "node install.mjs --dry-run",
+    "approve": "node bin/approve.mjs",
+    "audit": "node bin/audit.mjs"
+  },
+  "license": "MIT",
+  "private": true
+}

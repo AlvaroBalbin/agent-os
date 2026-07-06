@@ -1,0 +1,38 @@
+{
+  "_comment": "Claude Code Router config for the SocialGravity agentic OS. Place at ~/.claude-code-router/config.json on the always-on host. Brain=Anthropic (Opus/Fable), Hands=cheap models for background/reads. NEVER route PII-touching work to a cheap hosted provider - see the privacy note. Verify exact api_base_url values against each provider's current docs before first run.",
+
+  "LOG": true,
+  "API_TIMEOUT_MS": 600000,
+
+  "Providers": [
+    {
+      "name": "anthropic",
+      "api_base_url": "https://api.anthropic.com/v1/messages",
+      "api_key": "${ANTHROPIC_API_KEY}",
+      "models": ["claude-opus-4-8", "claude-fable-5"]
+    },
+    {
+      "name": "deepseek",
+      "api_base_url": "https://api.deepseek.com/chat/completions",
+      "api_key": "${DEEPSEEK_API_KEY}",
+      "models": ["deepseek-chat", "deepseek-reasoner"]
+    },
+    {
+      "name": "zai",
+      "_comment": "GLM hosted API. Use ONLY for no-PII mechanical code. For anything near user data, self-host the open GLM weights and point this at your own endpoint instead.",
+      "api_base_url": "https://api.z.ai/api/paas/v4/chat/completions",
+      "api_key": "${ZAI_API_KEY}",
+      "models": ["glm-4.6", "glm-5.2"]
+    }
+  ],
+
+  "Router": {
+    "_comment": "default+think+longContext stay on the brain (cheap models fumble edits and hard reasoning). background+webSearch go cheap. This is the biggest cost win: high-volume reads/sweeps/log-parsing on DeepSeek ~50x cheaper than Opus.",
+    "default": "anthropic,claude-opus-4-8",
+    "think": "anthropic,claude-opus-4-8",
+    "longContext": "anthropic,claude-opus-4-8",
+    "longContextThreshold": 60000,
+    "background": "deepseek,deepseek-chat",
+    "webSearch": "deepseek,deepseek-chat"
+  }
+}
