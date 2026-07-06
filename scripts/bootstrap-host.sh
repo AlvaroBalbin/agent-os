@@ -5,7 +5,7 @@
 # Version-sensitive lines are flagged VERIFY; re-check them against current docs.
 set -euo pipefail
 
-REPO_URL="${AGENT_OS_REPO:-https://github.com/CHANGE_ME/agent-os.git}"   # set to your repo, or pass AGENT_OS_REPO=...
+REPO_URL="${AGENT_OS_REPO:-https://github.com/AlvaroBalbin/agent-os.git}"   # private repo: run `gh auth login` on the host first, or pass AGENT_OS_REPO=...
 
 echo "==> base packages"
 sudo apt-get update -y
