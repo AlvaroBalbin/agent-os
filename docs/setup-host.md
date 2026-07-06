@@ -2,14 +2,19 @@
 
 The agent has to keep running when your laptop is closed, so it lives on an always-on box and you message it.
 
-## 1. The box
-- A $5-20/mo VPS (Hetzner / DigitalOcean / Fly) or a Mac mini you leave on. A laptop works to start but must stay awake.
-- Install: git, node (v20+), the agent CLI (Claude Code), your repos, and your `~/.claude` (skills, agents, hooks,
-  memory, settings). Clone this repo somewhere stable, e.g. `~/agent-os`.
-- Keep the agent session alive with a persistent process so it survives disconnects:
-  - Linux: `tmux new -s agent` then run the agent inside; or a systemd/pm2 service.
-  - Mac: tmux, or a `launchd` agent.
-  This is THE constraint every phone-control guide flags: the session must stay running.
+## 1. The box (pick one)
+- **Hetzner ~$6-8/mo (recommended, zero hassle):** CX22 (2 vCPU / 4GB) or CX32 (4 vCPU / 8GB), Ubuntu 24.04. Plenty
+  for Claude Code. DigitalOcean is ~3x the price for the same specs.
+- **Oracle Cloud Always Free ($0):** 4 ARM cores + 24GB RAM forever. Best free option; fussier signup, capacity can
+  be flaky in some regions. Worth it if you want $0.
+- A laptop works to START but must stay awake; a VPS is the real answer for "autonomous."
+
+Then just run the bootstrap script (installs node/bun/gh/Claude Code, clones this repo, verifies the guard, wires it):
+```bash
+AGENT_OS_REPO=<your agent-os git url> bash scripts/bootstrap-host.sh
+```
+Keep the agent session alive so it survives disconnects: `tmux new -s agent` then run the agent inside (or a
+systemd/pm2 service). This is THE constraint every phone-control guide flags: the session must stay running.
 
 ## 2. Wire the safety gate FIRST
 Before anything can act unattended, install the approval guard (see repo README):
