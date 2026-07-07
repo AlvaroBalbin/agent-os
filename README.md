@@ -29,15 +29,16 @@ code, not left to the model's judgment.
 
 ## What it looks like
 
+A real exchange (a production deploy, gated until the owner says go):
+
+<img src="docs/assets/telegram-demo.png" alt="Telegram exchange: deploy request, agent gates it, owner replies go, agent deploys and reports" width="420">
+
+And the everyday non-gated mode:
+
 ```
 you   > the landing page hero is broken on mobile, fix it
 agent > Found it: the zoom knob in DashboardLayout clamps wrong under 380px.
         Fixed, tests pass, pushed branch fix/hero-mobile and opened PR #131.
-
-you   > deploy the worker
-agent > GATED (deploy): railway up in ~/repos/worker. Reply "go" or "approve 7c1d".
-you   > go
-agent > Deployed. Health 200, live log shows the new code path. Done.
 ```
 
 ## Quickstart
