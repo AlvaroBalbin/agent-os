@@ -9,7 +9,7 @@
  * interactive ones and any parallel agents. Prefer installing on the dedicated always-on host, or only
  * when you are ready for the gate to apply here. Uninstall = remove the hook entry (backup is kept).
  */
-import { readFileSync, writeFileSync, existsSync, copyFileSync } from 'node:fs';
+import { readFileSync, writeFileSync, existsSync, copyFileSync, mkdirSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { dirname, join } from 'node:path';
 import { homedir } from 'node:os';
@@ -17,6 +17,7 @@ import { homedir } from 'node:os';
 const ROOT = dirname(fileURLToPath(import.meta.url));
 const DRY = process.argv.includes('--dry-run');
 const settingsPath = join(homedir(), '.claude', 'settings.json');
+const settingsDir = dirname(settingsPath);
 const hookPath = join(ROOT, 'hooks', 'costed-action-guard.mjs').replace(/\\/g, '/');
 const command = `node "${hookPath}"`;
 
@@ -47,6 +48,9 @@ if (existsSync(settingsPath)) {
   const bak = `${settingsPath}.bak.${new Date().toISOString().replace(/[:.]/g, '-')}`;
   copyFileSync(settingsPath, bak);
   console.log(`Backed up existing settings to ${bak}`);
+} else {
+  mkdirSync(settingsDir, { recursive: true });
+  console.log(`Created ${settingsDir}`);
 }
 writeFileSync(settingsPath, JSON.stringify(settings, null, 2));
 console.log('Guard installed. It is now live for sessions using this settings.json.');
