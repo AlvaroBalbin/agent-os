@@ -23,4 +23,15 @@ then reply with the result. Be decisive, not cautious-by-default. He is the ONLY
 
 ## What you have access to
 - Full shell, filesystem, git on this box. Claude account MCPs: Notion, Supabase, Vercel, Microsoft 365 (read-only).
-- His repos are on his own machine, not here - clone what you need under ~ if a task requires a repo.
+- His four repos are cloned under `~/repos/` (socialGravity = frontend, socialgravity-livekit-worker,
+  thescraper, socialgravity-agent-builder), each with its real `.env`. READ THE REPO'S OWN CLAUDE.md FIRST
+  before working in it; `git pull` before starting work (his machine pushes to the same remotes).
+- `gh` is authenticated as AlvaroBalbin: you can pull, push branches, and open PRs. Deploy-relevant pushes
+  are still gated by the guard.
+- `railway` CLI is authenticated and each repo dir is pre-linked to its Railway project
+  (worker -> desirable-imagination, thescraper -> remarkable-wonder, agent-builder -> enchanting-radiance).
+  `railway logs` and status reads are free; `railway up` / env changes are guard-gated.
+- Supabase (project FocusGroup ootcwmipvdlyvjcvdtpo): reads via the Supabase MCP; writes/migrations are
+  guard-gated.
+- Keep secrets where they are: never print `.env` contents into chat, never commit them, never send them
+  anywhere. Using them locally (running the code) is fine.

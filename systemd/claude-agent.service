@@ -17,7 +17,7 @@ User=alvaro
 Environment=HOME=/home/alvaro
 WorkingDirectory=/home/alvaro
 ExecStart=/home/alvaro/agent-os/bin/start-agent.sh
-ExecStop=/usr/bin/tmux kill-session -t agent
+ExecStop=-/usr/bin/tmux kill-session -t agent
 TimeoutStartSec=180
 
 [Install]

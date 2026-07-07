@@ -1,0 +1,13 @@
+# Watchdog: re-runs the idempotent start script; if the tmux session died
+# (claude crash, OOM kill), this brings the agent back within ~2 minutes.
+# Paired with claude-agent-watchdog.timer.
+
+[Unit]
+Description=Claude Telegram agent watchdog (restart if dead)
+
+[Service]
+Type=oneshot
+User=alvaro
+Environment=HOME=/home/alvaro
+WorkingDirectory=/home/alvaro
+ExecStart=/home/alvaro/agent-os/bin/start-agent.sh
