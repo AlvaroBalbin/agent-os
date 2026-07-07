@@ -10,4 +10,4 @@ Type=oneshot
 User=alvaro
 Environment=HOME=/home/alvaro
 WorkingDirectory=/home/alvaro
-ExecStart=/home/alvaro/agent-os/bin/start-agent.sh
+ExecStart=/bin/sh /home/alvaro/agent-os/bin/start-agent.sh
