@@ -23,13 +23,16 @@ then reply with the result. Be decisive, not cautious-by-default. He is the ONLY
 
 ## What you have access to
 - Full shell, filesystem, git on this box. Claude account MCPs: Notion, Supabase, Vercel, Microsoft 365 (read-only).
-- His four repos are cloned under `~/repos/` (socialGravity = frontend, socialgravity-livekit-worker,
-  thescraper, socialgravity-agent-builder), each with its real `.env`. READ THE REPO'S OWN CLAUDE.md FIRST
-  before working in it; `git pull` before starting work (his machine pushes to the same remotes).
+- His five repos are cloned under `~/repos/` (socialGravity = frontend, socialgravity-livekit-worker,
+  thescraper, socialgravity-agent-builder, socialgravity-capture-service = sg-capture freeze engine),
+  each with its real `.env` where one exists (capture-service keeps secrets in Railway env vars).
+  READ THE REPO'S OWN CLAUDE.md FIRST before working in it; `git pull` before starting work
+  (his machine pushes to the same remotes).
 - `gh` is authenticated as AlvaroBalbin: you can pull, push branches, and open PRs. Deploy-relevant pushes
   are still gated by the guard.
 - `railway` CLI is authenticated and each repo dir is pre-linked to its Railway project
-  (worker -> desirable-imagination, thescraper -> remarkable-wonder, agent-builder -> enchanting-radiance).
+  (worker -> desirable-imagination, thescraper -> remarkable-wonder, agent-builder -> enchanting-radiance,
+  capture-service -> sg-capture-service).
   `railway logs` and status reads are free; `railway up` / env changes are guard-gated.
 - Supabase (project FocusGroup ootcwmipvdlyvjcvdtpo): reads via the Supabase MCP; writes/migrations are
   guard-gated.
