@@ -1,64 +1,101 @@
 # agent-os
 
-A personal agent operating system. Drive AI agents from your phone, message-in / work-out, across all your
-projects and your whole machine - cheaply and safely.
+Text your server. It does the work. It asks before spending your money.
 
-It is not a new agent. It is the missing scaffolding around Claude Code (and any compatible agent) that makes
-"just tell it what to do" actually workable for a solo operator:
+This is the scaffolding that turns Claude Code on a $6/mo VPS into a personal agent you drive entirely from
+your phone: message-in / work-out, across all your repos and your whole machine, running 24/7, with a hard
+safety gate on anything that costs money or leaves the building.
 
-- **Brain / hands model split** - a top-tier model does judgment; a cheap model does high-volume execution. You
-  stop paying premium prices for reading and boilerplate. (See `config/routing.json`, `docs/model-tiers.md`.)
+It is not a new agent framework. It is the missing operational layer around Claude Code (and any compatible
+agent) that makes "just tell it what to do" actually workable for one person:
+
 - **A config-driven approval gate** - anything that spends money, sends something outbound, deploys to prod, or
-  destroys data is BLOCKED until you approve it from your phone. Everything else (read, draft, build, test) runs
-  free. Fails closed. (See `hooks/costed-action-guard.mjs`, `config/guard.rules.json`.)
-- **Phone-driven** - message a running agent from Telegram/iMessage/WhatsApp; it executes with full tool access
-  and replies in the same chat. (See `docs/setup-host.md`.)
-- **Portable + versioned** - one repo, one installer, works on your laptop and a $5 VPS.
+  destroys data is BLOCKED until you approve it from your phone ("approve a3f2" in the same chat). Everything
+  else (read, draft, build, test, commit) runs free. Fails closed. Approval comes only from your direct
+  message, never from anything the agent read - that is the prompt-injection trap the gate exists for.
+  (`hooks/costed-action-guard.mjs`, `config/guard.rules.json`)
+- **Phone-driven** - a Telegram bridge to a running Claude Code session on an always-on box. You message it, it
+  executes with full tool access (shell, git, gh, deploy CLIs), and replies in the same chat.
+  (`docs/setup-telegram.md`)
+- **Survives everything** - systemd service + watchdog timer: the box reboots, the agent comes back by itself,
+  trust prompts auto-answered. Verified by pulling the plug. (`systemd/`, `bin/start-agent.sh`)
+- **Brain / hands model split** - a top-tier model does judgment and code edits; a cheap model can do
+  high-volume reads and drafts. You stop paying premium prices for boilerplate. Optional.
+  (`config/routing.json`, `docs/model-tiers.md`)
+- **Portable + versioned** - one repo, one idempotent installer, one bootstrap script for a fresh VPS.
 
-The design principle: **autonomous on read/draft/build, gated on spend/send/deploy/destroy.** That is the correct
-safety line for a solo founder, and it is enforced in code, not left to the model's judgment.
+The design principle: **autonomous on read/draft/build, gated on spend/send/deploy/destroy.** Enforced in
+code, not left to the model's judgment.
+
+## What it looks like
+
+```
+you   > the landing page hero is broken on mobile, fix it
+agent > Found it: the zoom knob in DashboardLayout clamps wrong under 380px.
+        Fixed, tests pass, pushed branch fix/hero-mobile and opened PR #131.
+
+you   > deploy the worker
+agent > GATED (deploy): railway up in ~/repos/worker. Reply "go" or "approve 7c1d".
+you   > go
+agent > Deployed. Health 200, live log shows the new code path. Done.
+```
 
 ## Quickstart
+
+On your laptop (try the guard with zero commitment):
+
 ```bash
-# 1. see what the guard would gate (no changes made)
-node test/guard.test.mjs
+node test/guard.test.mjs      # 1. see what the guard would gate (no changes made)
+node install.mjs --dry-run    # 2. preview wiring it into your Claude Code settings (writes nothing)
+node install.mjs              # 3. wire it in (backs up settings.json first, merges with existing hooks)
 
-# 2. preview wiring the guard into your Claude Code settings (writes nothing)
-node install.mjs --dry-run
-
-# 3. when ready (ideally on your always-on host), wire it in (backs up settings.json first)
-node install.mjs
-
-# approve a gated action by id (what the guard hands you when it blocks something)
-node bin/approve.mjs <action-id>
-
-# see recent gated activity
-node bin/audit.mjs
+node bin/approve.mjs <id>     # approve a gated action by id
+node bin/audit.mjs            # see recent gated activity
 ```
 
-Then follow `docs/setup-host.md` (always-on box + phone bridge) and `docs/setup-routing.md` (cheap-hands routing).
+For the full phone-driven setup on an always-on box:
+
+1. `docs/setup-host.md` - provision a small VPS (Hetzner ~$6/mo, or Oracle free tier: `docs/setup-oracle.md`);
+   `scripts/bootstrap-host.sh` does node/bun/gh/Claude Code in one shot.
+2. `docs/setup-telegram.md` - the Telegram bridge (~5 min, uses your Claude login, no API key).
+3. `systemd/` - auto-start + watchdog so it survives reboots and crashes.
+4. Copy `examples/home-CLAUDE.example.md` to `~/CLAUDE.md` on the box and fill in your placeholders - this is
+   the operator prompt that makes the agent decisive-but-gated.
+5. Optional: `docs/setup-routing.md` - cheap-hands model routing.
 
 ## Layout
+
 ```
-config/     guard.rules.json (policy), routing.json (model policy), ccr-config.json (router config)
-rulepacks/  general.json (any project) + socialgravity.json (example domain pack); add your own, list in enabledPacks
 hooks/      costed-action-guard.mjs   the PreToolUse approval gate (config-driven, self-locating, fails closed)
-bin/        approve.mjs, audit.mjs
+config/     guard.rules.json (policy), routing.json (model policy), ccr-config.json (router config)
+rulepacks/  general.json (any project) + socialgravity.json (a real-world example pack); add your own
+bin/        approve.mjs, audit.mjs, start-agent.sh
+systemd/    claude-agent.service + watchdog service/timer
+scripts/    bootstrap-host.sh (fresh VPS -> running agent)
 skills/     dispatch/  the phone-message -> action routing discipline (a Claude Code skill)
-docs/       setup-host.md, setup-routing.md, model-tiers.md
-test/       guard.test.mjs
-install.mjs  idempotent installer (backs up settings.json)
+examples/   home-CLAUDE.example.md  the operator prompt template for the box
+docs/       setup-host.md, setup-oracle.md, setup-telegram.md, setup-routing.md, model-tiers.md
+test/       guard.test.mjs (17 cases + an approval round-trip)
+install.mjs  idempotent installer (backs up settings.json, merges with existing hooks)
 ```
 
-## Adapting to a new project
-Copy `rulepacks/socialgravity.json` to `rulepacks/<yourproject>.json`, add your costed/outbound command patterns,
-and add the pack name to `enabledPacks` in `config/guard.rules.json`. Nothing else changes.
+## Adapting to your stack
+
+Copy `rulepacks/socialgravity.json` (a real pack from a real startup) to `rulepacks/<yourproject>.json`, put
+your own costed/outbound command patterns in it, and add the pack name to `enabledPacks` in
+`config/guard.rules.json`. Nothing else changes.
 
 ## Safety notes
-- The gate is only as good as its patterns. It fails closed and errs toward gating, but review `rulepacks/*` for
-  your stack. Add anything that spends or destroys.
+
+- The gate is only as good as its patterns. It fails closed and errs toward gating, but review `rulepacks/*`
+  against your stack. Add anything that spends or destroys.
 - Never route personal/identity data to a cheap HOSTED model. See the privacy line in `config/routing.json`.
-- Installing makes the gate live for every session using that `settings.json`, including parallel agents. Prefer
-  the dedicated host.
+- Installing makes the gate live for every session using that `settings.json`, including parallel agents.
+  Prefer the dedicated host.
+- The Telegram allowlist is the auth boundary: only your paired chat id can drive the agent. Keep it that way.
 
 See `ARCHITECTURE.md` for the why behind each piece.
+
+## License
+
+MIT

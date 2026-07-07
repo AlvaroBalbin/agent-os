@@ -1,6 +1,6 @@
 # Auto-start the Claude Telegram agent on boot, wrapped in tmux (the
 # channel mode is a TUI and needs a pty; tmux provides it).
-# Install (on the box):
+# Replace YOUR_USER with your username, then install (on the box):
 #   sudo cp ~/agent-os/systemd/claude-agent.service /etc/systemd/system/
 #   sudo systemctl daemon-reload && sudo systemctl enable --now claude-agent
 # Attach to the live session: tmux attach -t agent
@@ -13,10 +13,10 @@ Wants=network-online.target
 [Service]
 Type=oneshot
 RemainAfterExit=yes
-User=alvaro
-Environment=HOME=/home/alvaro
-WorkingDirectory=/home/alvaro
-ExecStart=/bin/sh /home/alvaro/agent-os/bin/start-agent.sh
+User=YOUR_USER
+Environment=HOME=/home/YOUR_USER
+WorkingDirectory=/home/YOUR_USER
+ExecStart=/bin/sh /home/YOUR_USER/agent-os/bin/start-agent.sh
 ExecStop=-/usr/bin/tmux kill-session -t agent
 TimeoutStartSec=180
 
