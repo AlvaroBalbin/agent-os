@@ -12,17 +12,18 @@ agent) that makes "just tell it what to do" actually workable for one person:
 - **A config-driven approval gate** - anything that spends money, sends something outbound, deploys to prod, or
   destroys data is BLOCKED until you approve it from your phone ("approve a3f2" in the same chat). Everything
   else (read, draft, build, test, commit) runs free. Fails closed. Approval comes only from your direct
-  message, never from anything the agent read - that is the prompt-injection trap the gate exists for.
+  message, never from anything the agent read (web pages, files, emails), which closes the obvious
+  prompt-injection hole.
   (`hooks/costed-action-guard.mjs`, `config/guard.rules.json`)
-- **Phone-driven** - a Telegram bridge to a running Claude Code session on an always-on box. You message it, it
-  executes with full tool access (shell, git, gh, deploy CLIs), and replies in the same chat.
+- **Phone-driven.** A Telegram bridge to a running Claude Code session on an always-on box. You message it, it
+  executes with full tool access (shell, git, gh, deploy CLIs) and replies in the same chat.
   (`docs/setup-telegram.md`)
-- **Survives everything** - systemd service + watchdog timer: the box reboots, the agent comes back by itself,
+- **Survives reboots and crashes.** A systemd service plus a watchdog timer bring the agent back on its own,
   trust prompts auto-answered. Verified by pulling the plug. (`systemd/`, `bin/start-agent.sh`)
-- **Brain / hands model split** - a top-tier model does judgment and code edits; a cheap model can do
-  high-volume reads and drafts. You stop paying premium prices for boilerplate. Optional.
-  (`config/routing.json`, `docs/model-tiers.md`)
-- **Portable + versioned** - one repo, one idempotent installer, one bootstrap script for a fresh VPS.
+- **Optional brain/hands model split**, so a top-tier model does judgment and code edits while a cheap one
+  handles high-volume reads and drafts. (`config/routing.json`, `docs/model-tiers.md`)
+
+One repo, one idempotent installer, one bootstrap script for a fresh VPS.
 
 The design principle: **autonomous on read/draft/build, gated on spend/send/deploy/destroy.** Enforced in
 code, not left to the model's judgment.
@@ -33,13 +34,8 @@ A real exchange (a production deploy, gated until the owner says go):
 
 <img src="docs/assets/telegram-demo.png" alt="Telegram exchange: deploy request, agent gates it, owner replies go, agent deploys and reports" width="420">
 
-And the everyday non-gated mode:
-
-```
-you   > the landing page hero is broken on mobile, fix it
-agent > Found it: the zoom knob in DashboardLayout clamps wrong under 380px.
-        Fixed, tests pass, pushed branch fix/hero-mobile and opened PR #131.
-```
+Non-gated work (fix a bug, push a branch, open a PR, dig through logs) runs the same way, minus the
+approval step: you describe the problem, it reports back when it's done.
 
 ## Quickstart
 
@@ -76,7 +72,7 @@ scripts/    bootstrap-host.sh (fresh VPS -> running agent)
 skills/     dispatch/  the phone-message -> action routing discipline (a Claude Code skill)
 examples/   home-CLAUDE.example.md  the operator prompt template for the box
 docs/       setup-host.md, setup-oracle.md, setup-telegram.md, setup-routing.md, model-tiers.md
-test/       guard.test.mjs (17 cases + an approval round-trip)
+test/       guard.test.mjs
 install.mjs  idempotent installer (backs up settings.json, merges with existing hooks)
 ```
 
@@ -90,6 +86,8 @@ your own costed/outbound command patterns in it, and add the pack name to `enabl
 
 - The gate is only as good as its patterns. It fails closed and errs toward gating, but review `rulepacks/*`
   against your stack. Add anything that spends or destroys.
+- The hook only ever rules on actions it gates. Everything else passes through untouched to Claude Code's
+  normal permission flow; the guard never auto-approves on your behalf.
 - Never route personal/identity data to a cheap HOSTED model. See the privacy line in `config/routing.json`.
 - Installing makes the gate live for every session using that `settings.json`, including parallel agents.
   Prefer the dedicated host.

@@ -27,7 +27,7 @@
   ],
 
   "Router": {
-    "_comment": "default+think+longContext stay on the brain (cheap models fumble edits and hard reasoning). background+webSearch go cheap. This is the biggest cost win: high-volume reads/sweeps/log-parsing on DeepSeek ~50x cheaper than Opus.",
+    "_comment": "default+think+longContext stay on the brain, background+webSearch go cheap. Most of the cost win comes from moving background work off the expensive model.",
     "default": "anthropic,claude-opus-4-8",
     "think": "anthropic,claude-opus-4-8",
     "longContext": "anthropic,claude-opus-4-8",

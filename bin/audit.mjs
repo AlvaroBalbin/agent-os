@@ -5,7 +5,7 @@ import { fileURLToPath } from 'node:url';
 import { dirname, join } from 'node:path';
 
 const ROOT = process.env.AGENT_OS_HOME || dirname(dirname(fileURLToPath(import.meta.url)));
-const STATE = join(ROOT, 'state');
+const STATE = process.env.AGENT_OS_STATE || join(ROOT, 'state');
 const N = parseInt(process.argv[2] || '20', 10);
 const read = (f) => (existsSync(f) ? readFileSync(f, 'utf8').split(/\r?\n/).filter(Boolean) : []);
 

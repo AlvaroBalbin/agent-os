@@ -2,9 +2,10 @@
 
 Gives you a 4-core ARM / 24GB Ubuntu box forever, free. The one real gotcha is ARM capacity (below).
 
-## 0. SSH key (already generated for you)
-Public key to paste into Oracle: the contents of `~/.ssh/agent-os-oracle.pub`
-(private key stays on your machine at `~/.ssh/agent-os-oracle` - never share it).
+## 0. SSH key
+`ssh-keygen -t ed25519 -f ~/.ssh/agent-os-oracle`
+You'll paste the contents of `~/.ssh/agent-os-oracle.pub` into Oracle during instance creation. The private
+key never leaves your machine.
 
 ## 1. Sign up
 - Go to https://www.oracle.com/cloud/free/ -> Start for free. Needs email, phone, and a card for identity

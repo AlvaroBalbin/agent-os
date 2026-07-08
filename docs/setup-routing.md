@@ -14,8 +14,8 @@ Routing (in `ccr-config.json`): default/think/longContext -> brain (Opus/Fable);
 (DeepSeek). Background on DeepSeek is ~50x cheaper than Opus and is the single biggest cost win.
 Per-subagent cheap routing: prefix a subagent prompt with `<CCR-SUBAGENT-MODEL>deepseek,deepseek-chat</CCR-SUBAGENT-MODEL>`.
 
-Keep EDITS on the brain: cheap models fumble code edits (wrong line numbers, malformed hunks). Route them to
-reads/sweeps/drafts only.
+Keep edits on the brain. Every cheap model I tried eventually fumbles a code edit (wrong line numbers,
+malformed hunks), so they get reads, sweeps and drafts only.
 
 ## Option B - direct cheap model (simplest, no router)
 A separate agent instance pointed at a cheap provider's Anthropic-compatible endpoint, used ONLY for no-PII
@@ -43,4 +43,4 @@ went to the brain. Confirm no PII-touching task is routed to a hosted cheap prov
 
 ## Note
 Native Claude Code subagent model-override has had a bug where it resolves to the parent model; the router's
-`<CCR-SUBAGENT-MODEL>` tag is the reliable mechanism. Verify current behavior when you set up.
+`<CCR-SUBAGENT-MODEL>` tag is the reliable mechanism.

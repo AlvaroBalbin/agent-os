@@ -31,4 +31,4 @@ Total new spend to go phone-driven + cheap-hands: ~$25-40/mo. There is no expens
 model is already sunk.
 
 Sources (Jul 2026): SWE-bench Verified leaderboards (llm-stats, swebench.com); GLM Coding Plan pricing; DeepSeek
-API pricing; Claude Code Router docs. Re-check before relying on exact numbers - the leaderboard moves monthly.
+API pricing; Claude Code Router docs. The leaderboard moves monthly, so treat the digits as a snapshot.

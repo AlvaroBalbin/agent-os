@@ -19,7 +19,7 @@ import { fileURLToPath } from 'node:url';
 import { dirname, join } from 'node:path';
 
 const ROOT = process.env.AGENT_OS_HOME || dirname(dirname(fileURLToPath(import.meta.url)));
-const STATE = join(ROOT, 'state');
+const STATE = process.env.AGENT_OS_STATE || join(ROOT, 'state');
 try { mkdirSync(STATE, { recursive: true }); } catch {}
 
 function emit(decision, reason) {
@@ -69,7 +69,12 @@ function safeRe(p) { try { return new RegExp(p, 'i'); } catch { return { test: (
 const { category, why } = classify();
 const policy = category ? (cfg.categories[category]?.policy || cfg.defaultPolicy) : 'allow';
 
-if (policy === 'allow') emit('allow', category ? `${category}: allowed by policy` : 'not a gated action');
+// Not a gated action: say nothing and let Claude Code's normal permission flow decide.
+// The guard only ever rules on actions it gates; it never auto-approves the rest.
+if (policy === 'allow') {
+  if (!category) process.exit(0);
+  emit('allow', `${category}: allowed by policy`);
+}
 if (policy === 'deny')  emit('deny', `BLOCKED: ${category} is policy=deny (${why}). No approval path; do not attempt.`);
 
 // ---- gate: approval check ----
